@@ -29,8 +29,8 @@ const verifyToken = (req, res, next) => {
                             maxAge: 7 * 24 * 60 * 60 * 1000,
                             expires: 3600,
                             httpOnly: false,
-                            domain: '.vercel.app',
-                            sameSite: 'Lax',
+                            domain: 'chat-app-w1ey.onrender.com',
+                            sameSite: 'lax',
                             path: '/',
                             secure: true,
                         })
@@ -103,8 +103,8 @@ router.post('/login', async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             expires: 3600,
             httpOnly: false,
-            domain: '.vercel.app',
-            sameSite: 'Lax',
+            domain: 'chat-app-w1ey.onrender.com',
+            sameSite: 'lax',
             path: '/',
             secure: true,
         })
@@ -114,8 +114,8 @@ router.post('/login', async (req, res) => {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             expires: 3600,
             httpOnly: false,
-            domain: '.vercel.app',
-            sameSite: 'Lax',
+            domain: 'chat-app-w1ey.onrender.com',
+            sameSite: 'lax',
             path: '/',
             secure: true,
         })
@@ -129,22 +129,22 @@ router.post('/login', async (req, res) => {
 
 router.post('/logout', async (req, res) => {
     try {
-        res.cookie('accessToken', ' ', {
+        res.cookie('accessToken', null, {
+            maxAge: 30 * 24 * 60 * 60 * 1000,
             expires: 3600,
-            maxAge: 1,
             httpOnly: false,
-            domain: '.vercel.app',
-            sameSite: 'Lax',
+            domain: 'chat-app-w1ey.onrender.com',
+            sameSite: 'lax',
             path: '/',
             secure: true,
         })
 
-        res.cookie('refreshToken', ' ', {
+        res.cookie('refreshToken', null, {
+            maxAge: 30 * 24 * 60 * 60 * 1000,
             expires: 3600,
-            maxAge: 1,
             httpOnly: false,
-            domain: '.vercel.app',
-            sameSite: 'Lax',
+            domain: 'chat-app-w1ey.onrender.com',
+            sameSite: 'lax',
             path: '/',
             secure: true,
         })
