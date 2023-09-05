@@ -98,24 +98,8 @@ router.post('/login', async (req, res) => {
         user.refreshToken = refreshToken
         await user.save()
 
-        res.cookie('accessToken', token, {
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-            httpOnly: false,
-            sameSite: 'None',
-            domain: ".vercel.app",
-            path: '/',
-            secure: true,
-        })
+        res.setHeader('Set-Cookie', [`accessToken=${token}; Max-Age=604800; HttpOnly; Secure; SameSite=None; Domain=.vercel.app; Path=/`, `refreshToken=${refreshToken}; Max-Age=2592000; HttpOnly; Secure; SameSite=None; Domain=.vercel.app; Path=/`]);
 
-
-        res.cookie('refreshToken', refreshToken, {
-            maxAge: 30 * 24 * 60 * 60 * 1000,
-            httpOnly: false,
-            sameSite: 'None',
-            domain: ".vercel.app",
-            path: '/',
-            secure: true,
-        })
 
         res.json({ success: true, user: user });
     } catch (error) {
