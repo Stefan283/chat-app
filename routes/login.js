@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-// const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Users, Messages } = require('./Schema');
 
@@ -62,7 +62,7 @@ router.post('/register', async (req, res) => {
                 conversation: []
             })
             await newMessgaes.save()
-            const hashedPassword = '' // await bcrypt.hash(password, 10);
+            const hashedPassword =  await bcrypt.hash(password, 10);
             const newUser = new Users({
                 username: username,
                 email: email,
@@ -85,7 +85,7 @@ router.post('/login', async (req, res) => {
     try {
         const { username, password, email } = req.body;
         const user = await Users.findOne({ username, email })
-        if (!user || !true){//(await bcrypt.compare(password, user.password))) {
+        if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.json({ success: false, message: 'Authentification failed!' })
         }
 
