@@ -29,7 +29,7 @@ const verifyToken = (req, res, next) => {
                             maxAge: 7 * 24 * 60 * 60 * 1000,
                             expires: 3600,
                             httpOnly: true,
-                            secure: false,
+                            secure: true,
                         })
                         req.user = user
                     })
@@ -100,7 +100,7 @@ router.post('/login', async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             expires: 3600,
             httpOnly: true,
-            secure: false,
+            secure: true,
         })
 
 
@@ -108,7 +108,7 @@ router.post('/login', async (req, res) => {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             expires: 3600,
             httpOnly: true,
-            secure: false,
+            secure: true,
         })
 
         res.json({ success: true, user: user });
@@ -124,14 +124,14 @@ router.post('/logout', async (req, res) => {
             expires: 3600,
             maxAge: 1,
             httpOnly: true,
-            secure: false,
+            secure: true,
         })
 
         res.cookie('refreshToken', ' ', {
             expires: 3600,
             maxAge: 1,
             httpOnly: true,
-            secure: false,
+            secure: true,
         })
 
         res.json({ success: true })
