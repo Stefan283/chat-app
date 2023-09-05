@@ -205,7 +205,7 @@ var port = normalizePort(process.env.PORT || '9000');
 app.set('port', port);
 
 server.listen(port,
-  '192.168.100.34', 
+  // '192.168.100.34', 
   async () => {
     await connect()
     console.log(`Server is on port: ${port}`)
