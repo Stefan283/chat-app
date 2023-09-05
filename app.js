@@ -6,13 +6,18 @@ var logger = require('morgan');
 require('dotenv').config()
 const cors = require('cors')
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var messagesRouter = require('./routes/messages')
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const loginRouter = require('./routes/login')
+
+const schema = require('./routes/graphql')
+const { graphqlHTTP } = require('express-graphql'); 
+
+// Increase the file size limit to handle larger files
+
 
 
 var app = express();
-
 
 
 
@@ -25,6 +30,11 @@ app.use(function(req, res, next) {
   next();
 });
 
+
+app.use(cors({
+  origin: process.env.WEBSITE,
+  credentials: true, 
+}));
 
 
 // view engine setup
@@ -39,7 +49,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/messages', messagesRouter)
+app.use('/login', loginRouter)
+app.use(
+  '/graphql',
+  graphqlHTTP({
+    schema,
+    graphiql: true,
+  })
+);
 
 
 // catch 404 and forward to error handler

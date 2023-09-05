@@ -6,6 +6,36 @@ const logger = require('morgan');
 const mongoose = require('mongoose')
 require('dotenv').config();
 const { Messages } = require('../routes/Schema.js');
+const { S3 } = require('aws-sdk');
+
+
+const s3 = new S3({
+  region: 'eu-west-3',
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCES_KEY,
+  },
+});
+
+const uploadPhoto = async (photoData) => {
+  try {
+    const buffer = Buffer.from(photoData, 'base64');
+    const fileName = `uploads/${Date.now()}${Math.random()}`;
+    const params = {
+      Bucket: 'chatapp2834',
+      Key: fileName,
+      Body: buffer,
+    };
+
+    const uploaded = await s3.upload(params).promise();
+    const photoUrl = uploaded.Location;
+    console.log('Photo uploaded succesfuly')
+    return { success: true, photo: photoUrl };
+  } catch (error) {
+    console.error('Error uploading to S3:', error);
+    return { success: false, message: error.message }
+  }
+};
 
 
 var port = normalizePort(process.env.PORT || '3000');
@@ -33,11 +63,21 @@ io.on('connection', (socket) => {
 
   socket.on('message', async (data) => {
     try {
-      const message = {
+      if (data?.photo) {
+        console.log(data.photo)
+        const photoData = await uploadPhoto(data?.photo)
+        if (photoData.success) {
+          var photo = photoData.photo
+        } else {
+          return new Error({ message: `Cannot upload the photo: ${photoData.message}` })
+        }
+      }
+      let message = {
         email: data.emailSend,
         date: data.date,
-        message: data.message
+        message: data.message,
       }
+      message = photo ? { ...message, photo: photo } : message
       const userSend = await Messages.exists({
         email: data.emailSend,
         'conversations.email': data.emailReceive,
@@ -93,8 +133,7 @@ io.on('connection', (socket) => {
         );
       }
       console.log(`Message sent in room: ${data.room}`);
-
-      io.to(data.room).emit('message', { success: true, message: message });
+      io.to(data.room).emit('message', { success: true, message: message, photo: message?.photo });
       const sideReceive = {
         username: data?.userSend || '',
         lastMsg: data?.message || '',
@@ -165,12 +204,12 @@ const connect = async () => {
 var port = normalizePort(process.env.PORT || '9000');
 app.set('port', port);
 
-server.listen(port, 
+server.listen(port,
   // '192.168.100.34', 
   async () => {
-  await connect()
-  console.log(`Server is on port: ${port}`)
-});
+    await connect()
+    console.log(`Server is on port: ${port}`)
+  });
 server.on('error', onError);
 server.on('listening', onListening);
 
