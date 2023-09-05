@@ -13,12 +13,8 @@ const loginRouter = require('./routes/login')
 const schema = require('./routes/graphql')
 const { graphqlHTTP } = require('express-graphql');
 
-// Increase the file size limit to handle larger files
-
-
 
 var app = express();
-
 
 
 app.use(cookieParser());
