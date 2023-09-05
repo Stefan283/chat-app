@@ -98,7 +98,7 @@ router.post('/login', async (req, res) => {
         user.refreshToken = refreshToken
         await user.save()
 
-        res.setHeader('Set-Cookie', [`accessToken=${token}; Max-Age=604800; HttpOnly; Secure; SameSite=None; Domain=.vercel.app; Path=/`, `refreshToken=${refreshToken}; Max-Age=2592000; HttpOnly; Secure; SameSite=None; Domain=.vercel.app; Path=/`]);
+        res.setHeader('Set-Cookie', [`accessToken=${token}; Max-Age=604800; HttpOnly; Secure; SameSite=None; Domain=chat-drab-nine.vercel.app; Path=/`, `refreshToken=${refreshToken}; Max-Age=2592000; HttpOnly; Secure; SameSite=None; Domain=chat-drab-nine.vercel.app; Path=/`]);
 
 
         res.json({ success: true, user: user });
