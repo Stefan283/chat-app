@@ -30,7 +30,6 @@ const verifyToken = (req, res, next) => {
                             expires: 3600,
                             httpOnly: true,
                             secure: true,
-                            sameSite: 'none'
                         })
                         req.user = user
                     })
@@ -102,7 +101,6 @@ router.post('/login', async (req, res) => {
             expires: 3600,
             httpOnly: true,
             secure: true,
-            sameSite: 'none'
         })
 
 
@@ -111,7 +109,6 @@ router.post('/login', async (req, res) => {
             expires: 3600,
             httpOnly: true,
             secure: true,
-            sameSite: 'none'
         })
 
         res.json({ success: true, user: user });
@@ -128,7 +125,6 @@ router.post('/logout', async (req, res) => {
             maxAge: 1,
             httpOnly: true,
             secure: true,
-            sameSite: 'none'
         })
 
         res.cookie('refreshToken', ' ', {
@@ -136,7 +132,6 @@ router.post('/logout', async (req, res) => {
             maxAge: 1,
             httpOnly: true,
             secure: true,
-            sameSite: 'none'
         })
 
         res.json({ success: true })
