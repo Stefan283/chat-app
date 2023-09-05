@@ -29,7 +29,7 @@ const verifyToken = (req, res, next) => {
                             maxAge: 7 * 24 * 60 * 60 * 1000,
                             httpOnly: false,
                             domain: 'vercel.app',
-                            sameSite: "none",
+                            sameSite: false,
                             path: '/',
                             secure: true,
                         })
@@ -102,7 +102,7 @@ router.post('/login', async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             httpOnly: false,
             domain: 'vercel.app',
-            sameSite: "none",
+            sameSite: false,
             path: '/',
             secure: true,
         })
@@ -112,7 +112,7 @@ router.post('/login', async (req, res) => {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: false,
             domain: 'vercel.app',
-            sameSite: "none",
+            sameSite: false,
             path: '/',
             secure: true,
         })
@@ -130,7 +130,7 @@ router.post('/logout', async (req, res) => {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: false,
             domain: 'vercel.app',
-            sameSite: "none",
+            sameSite: false,
             path: '/',
             secure: true,
         })
@@ -139,7 +139,7 @@ router.post('/logout', async (req, res) => {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: false,
             domain: 'vercel.app',
-            sameSite: "none",
+            sameSite: false,
             path: '/',
             secure: true,
         })
