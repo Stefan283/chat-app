@@ -27,12 +27,11 @@ const verifyToken = (req, res, next) => {
                         const newJwt = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.ACCESS_TOKEN, { expiresIn: '30s' });
                         res.cookie('accessToken', newJwt, {
                             maxAge: 7 * 24 * 60 * 60 * 1000,
-                            expires: Date.now() + 1000 * 60 * 60 * 24 * 30,
-                            httpOnly: true,
+                            httpOnly: false,
                             domain: 'vercel.app',
-                            sameSite: "lax",
+                            sameSite: "none",
                             path: '/',
-                            secure: false,
+                            secure: true,
                         })
                         req.user = user
                     })
@@ -101,23 +100,21 @@ router.post('/login', async (req, res) => {
 
         res.cookie('accessToken', token, {
             maxAge: 7 * 24 * 60 * 60 * 1000,
-            expires: Date.now() + 1000 * 60 * 60 * 24 * 30,
-            httpOnly: true,
+            httpOnly: false,
             domain: 'vercel.app',
-            sameSite: "lax",
+            sameSite: "none",
             path: '/',
-            secure: false,
+            secure: true,
         })
 
 
         res.cookie('refreshToken', refreshToken, {
             maxAge: 30 * 24 * 60 * 60 * 1000,
-            expires: Date.now() + 1000 * 60 * 60 * 24 * 30,
-            httpOnly: true,
+            httpOnly: false,
             domain: 'vercel.app',
-            sameSite: "lax",
+            sameSite: "none",
             path: '/',
-            secure: false,
+            secure: true,
         })
 
         res.json({ success: true, user: user });
@@ -131,22 +128,20 @@ router.post('/logout', async (req, res) => {
     try {
         res.cookie('accessToken', null, {
             maxAge: 30 * 24 * 60 * 60 * 1000,
-            expires: Date.now() + 1000 * 60 * 60 * 24 * 30,
-            httpOnly: true,
+            httpOnly: false,
             domain: 'vercel.app',
-            sameSite: "lax",
+            sameSite: "none",
             path: '/',
-            secure: false,
+            secure: true,
         })
 
         res.cookie('refreshToken', null, {
             maxAge: 30 * 24 * 60 * 60 * 1000,
-            expires: Date.now() + 1000 * 60 * 60 * 24 * 30,
-            httpOnly: true,
+            httpOnly: false,
             domain: 'vercel.app',
-            sameSite: "lax",
+            sameSite: "none",
             path: '/',
-            secure: false,
+            secure: true,
         })
 
         res.json({ success: true })
