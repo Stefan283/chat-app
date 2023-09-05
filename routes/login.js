@@ -28,7 +28,7 @@ const verifyToken = (req, res, next) => {
                         res.cookie('accessToken', newJwt, {
                             maxAge: 7 * 24 * 60 * 60 * 1000,
                             expires: 3600,
-                            httpOnly: true,
+                            httpOnly: false,
                             secure: true,
                         })
                         req.user = user
@@ -99,7 +99,7 @@ router.post('/login', async (req, res) => {
         res.cookie('accessToken', token, {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             expires: 3600,
-            httpOnly: true,
+            httpOnly: false,
             secure: true,
         })
 
@@ -107,7 +107,7 @@ router.post('/login', async (req, res) => {
         res.cookie('refreshToken', refreshToken, {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             expires: 3600,
-            httpOnly: true,
+            httpOnly: false,
             secure: true,
         })
 
@@ -123,14 +123,14 @@ router.post('/logout', async (req, res) => {
         res.cookie('accessToken', ' ', {
             expires: 3600,
             maxAge: 1,
-            httpOnly: true,
+            httpOnly: false,
             secure: true,
         })
 
         res.cookie('refreshToken', ' ', {
             expires: 3600,
             maxAge: 1,
-            httpOnly: true,
+            httpOnly: false,
             secure: true,
         })
 
