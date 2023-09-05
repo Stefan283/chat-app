@@ -27,12 +27,11 @@ const verifyToken = (req, res, next) => {
                         const newJwt = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.ACCESS_TOKEN, { expiresIn: '30s' });
                         res.cookie('accessToken', newJwt, {
                             maxAge: 7 * 24 * 60 * 60 * 1000,
+                            expires: 3600,
+                            httpOnly: false,
                             domain: 'chat-drab-nine.vercel.app',
                             path: '/',
-                            maxAge: 3600000, // Cookie expiration time in milliseconds (1 hour in this example).
-                            httpOnly: true, // Cookie is accessible only via HTTP(S) and not from JavaScript.
-                            secure: true, // Cookie is sent over HTTPS only.
-                            sameSite: 'strict',
+                            secure: true,
                         })
                         req.user = user
                     })
@@ -100,22 +99,22 @@ router.post('/login', async (req, res) => {
         await user.save()
 
         res.cookie('accessToken', token, {
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            expires: 3600,
+            httpOnly: false,
             domain: 'chat-drab-nine.vercel.app',
             path: '/',
-            maxAge: 3600000, // Cookie expiration time in milliseconds (1 hour in this example).
-            httpOnly: true, // Cookie is accessible only via HTTP(S) and not from JavaScript.
-            secure: true, // Cookie is sent over HTTPS only.
-            sameSite: 'strict',
+            secure: true,
         })
 
 
         res.cookie('refreshToken', refreshToken, {
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+            expires: 3600,
+            httpOnly: false,
             domain: 'chat-drab-nine.vercel.app',
             path: '/',
-            maxAge: 3600000, // Cookie expiration time in milliseconds (1 hour in this example).
-            httpOnly: true, // Cookie is accessible only via HTTP(S) and not from JavaScript.
-            secure: true, // Cookie is sent over HTTPS only.
-            sameSite: 'strict',
+            secure: true,
         })
 
         res.json({ success: true, user: user });
@@ -128,21 +127,21 @@ router.post('/login', async (req, res) => {
 router.post('/logout', async (req, res) => {
     try {
         res.cookie('accessToken', ' ', {
+            expires: 3600,
+            maxAge: 1,
+            httpOnly: false,
             domain: 'chat-drab-nine.vercel.app',
             path: '/',
-            maxAge: 3600000, // Cookie expiration time in milliseconds (1 hour in this example).
-            httpOnly: true, // Cookie is accessible only via HTTP(S) and not from JavaScript.
-            secure: true, // Cookie is sent over HTTPS only.
-            sameSite: 'strict',
+            secure: true,
         })
 
         res.cookie('refreshToken', ' ', {
+            expires: 3600,
+            maxAge: 1,
+            httpOnly: false,
             domain: 'chat-drab-nine.vercel.app',
             path: '/',
-            maxAge: 3600000, // Cookie expiration time in milliseconds (1 hour in this example).
-            httpOnly: true, // Cookie is accessible only via HTTP(S) and not from JavaScript.
-            secure: true, // Cookie is sent over HTTPS only.
-            sameSite: 'strict',
+            secure: true,
         })
 
         res.json({ success: true })
