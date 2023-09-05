@@ -30,6 +30,7 @@ const verifyToken = (req, res, next) => {
                             expires: 3600,
                             httpOnly: false,
                             domain: 'chat-drab-nine.vercel.app',
+                            sameSite: 'Lax',
                             path: '/',
                             secure: true,
                         })
@@ -103,6 +104,7 @@ router.post('/login', async (req, res) => {
             expires: 3600,
             httpOnly: false,
             domain: 'chat-drab-nine.vercel.app',
+            sameSite: 'Lax',
             path: '/',
             secure: true,
         })
@@ -113,6 +115,7 @@ router.post('/login', async (req, res) => {
             expires: 3600,
             httpOnly: false,
             domain: 'chat-drab-nine.vercel.app',
+            sameSite: 'Lax',
             path: '/',
             secure: true,
         })
@@ -131,6 +134,7 @@ router.post('/logout', async (req, res) => {
             maxAge: 1,
             httpOnly: false,
             domain: 'chat-drab-nine.vercel.app',
+            sameSite: 'Lax',
             path: '/',
             secure: true,
         })
@@ -140,6 +144,7 @@ router.post('/logout', async (req, res) => {
             maxAge: 1,
             httpOnly: false,
             domain: 'chat-drab-nine.vercel.app',
+            sameSite: 'Lax',
             path: '/',
             secure: true,
         })
