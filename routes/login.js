@@ -28,10 +28,10 @@ const verifyToken = (req, res, next) => {
                         res.cookie('accessToken', newJwt, {
                             maxAge: 7 * 24 * 60 * 60 * 1000,
                             httpOnly: false,
-                            domain: 'vercel.app',
-                            sameSite: false,
+                            sameSite: "none",
+                            domain:"chat-drab-nine.vercel.app",
                             path: '/',
-                            secure: true,
+                            secure: false,
                         })
                         req.user = user
                     })
@@ -101,20 +101,20 @@ router.post('/login', async (req, res) => {
         res.cookie('accessToken', token, {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             httpOnly: false,
-            domain: 'vercel.app',
-            sameSite: false,
+            sameSite: "none",
+            domain:"chat-drab-nine.vercel.app",
             path: '/',
-            secure: true,
+            secure: false,
         })
 
 
         res.cookie('refreshToken', refreshToken, {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: false,
-            domain: 'vercel.app',
-            sameSite: false,
+            sameSite: "none",
+            domain:"chat-drab-nine.vercel.app",
             path: '/',
-            secure: true,
+            secure: false,
         })
 
         res.json({ success: true, user: user });
@@ -129,19 +129,19 @@ router.post('/logout', async (req, res) => {
         res.cookie('accessToken', null, {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: false,
-            domain: 'vercel.app',
-            sameSite: false,
+            sameSite: "none",
+            domain:"chat-drab-nine.vercel.app",
             path: '/',
-            secure: true,
+            secure: false,
         })
 
         res.cookie('refreshToken', null, {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: false,
-            domain: 'vercel.app',
-            sameSite: false,
+            sameSite: "none",
+            domain:"chat-drab-nine.vercel.app",
             path: '/',
-            secure: true,
+            secure: false,
         })
 
         res.json({ success: true })
