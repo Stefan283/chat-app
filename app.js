@@ -11,7 +11,7 @@ const usersRouter = require('./routes/users');
 const loginRouter = require('./routes/login')
 
 const schema = require('./routes/graphql')
-const { graphqlHTTP } = require('express-graphql'); 
+const { graphqlHTTP } = require('express-graphql');
 
 // Increase the file size limit to handle larger files
 
@@ -22,18 +22,23 @@ var app = express();
 
 
 app.use(cookieParser());
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', process.env.WEBSITE);
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Access-Control-Allow-Credentials', true);
-  next();
+
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
 });
 
 
 app.use(cors({
   origin: process.env.WEBSITE,
-  credentials: true, 
+  credentials: true,
 }));
 
 
@@ -60,12 +65,12 @@ app.use(
 
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
