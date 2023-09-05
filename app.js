@@ -16,7 +16,6 @@ const { graphqlHTTP } = require('express-graphql');
 
 var app = express();
 
-
 app.use(cookieParser());
 app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', process.env.WEBSITE);
