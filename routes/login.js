@@ -31,7 +31,7 @@ const verifyToken = (req, res, next) => {
                             sameSite: "None",
                             domain: "chat-drab-nine.vercel.app",
                             path: '/',
-                            secure: false,
+                            secure: true,
                         })
                         req.user = user
                     })
@@ -104,7 +104,7 @@ router.post('/login', async (req, res) => {
             sameSite: "None",
             domain: "chat-drab-nine.vercel.app",
             path: '/',
-            secure: false,
+            secure: true,
         })
 
 
@@ -114,7 +114,7 @@ router.post('/login', async (req, res) => {
             sameSite: "None",
             domain: "chat-drab-nine.vercel.app",
             path: '/',
-            secure: false,
+            secure: true,
         })
 
         res.json({ success: true, user: user });
@@ -132,7 +132,7 @@ router.post('/logout', async (req, res) => {
             sameSite: "None",
             domain: "chat-drab-nine.vercel.app",
             path: '/',
-            secure: false,
+            secure: true,
         })
 
         res.cookie('refreshToken', null, {
@@ -141,7 +141,7 @@ router.post('/logout', async (req, res) => {
             sameSite: "None",
             domain: "chat-drab-nine.vercel.app",
             path: '/',
-            secure: false,
+            secure: true,
         })
 
         res.json({ success: true })
