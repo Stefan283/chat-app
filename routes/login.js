@@ -18,7 +18,6 @@ const verifyToken = (req, res, next) => {
             if (err) {
                 if (err.name === 'TokenExpiredError') {
                     const refreshToken = req.cookies.refreshToken
-                    console.log(req.cookies )
                     console.log(refreshToken)
                     if (!refreshToken) return res.json({ success: false, message: 'Refresh token missing', action: 'logout' })
                     jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, user) => {
@@ -90,9 +89,9 @@ router.post('/login', async (req, res) => {
         const cookieOptions = {
             domain:'chat-drab-nine.vercel.app',
             secure: false,
-            httpOnly: false,
-            path: '/' ,
-            expires: 700000000,
+            maxAge: 7 * 24 * 60 * 60,
+            path:'/',
+            httpOnly: false
         };
         const refreshTokenCookie = cookie.serialize('refreshToken', refreshToken, cookieOptions);
 
