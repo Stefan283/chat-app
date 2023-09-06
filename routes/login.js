@@ -86,7 +86,11 @@ router.post('/login', async (req, res) => {
 
         const refreshToken = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.REFRESH_TOKEN)
 
-        res.setHeader('Set-Cookie', cookie.serialize('refreshToken', refreshToken));
+        res.setHeader('Set-Cookie', cookie.serialize('refreshToken', refreshToken, {
+            path:'/',
+            domain: 'chat-drab-nine.vercel.app',
+            maxAge:10000000
+        }));
 
 
         res.json({ success: true, accessToken: accessToken, user: user });
