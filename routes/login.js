@@ -18,6 +18,7 @@ const verifyToken = (req, res, next) => {
             if (err) {
                 if (err.name === 'TokenExpiredError') {
                     const refreshToken = req.cookies.refreshToken
+                    console.log(req.cookies )
                     console.log(refreshToken)
                     if (!refreshToken) return res.json({ success: false, message: 'Refresh token missing', action: 'logout' })
                     jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, user) => {
