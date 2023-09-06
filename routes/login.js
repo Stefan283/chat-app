@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const cookie = require('cookie');
 const { Users, Messages } = require('./Schema');
 
+const accesExpire = '10m'
+
 const verifyToken = (req, res, next) => {
     const header = req.headers['authorization'];
     const accessToken = header ? header.split(' ')[1] : null
@@ -20,7 +22,7 @@ const verifyToken = (req, res, next) => {
                     if (!refreshToken) return res.json({ success: false, message: 'Refresh token missing', action: 'logout' })
                     jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, user) => {
                         if (err) return res.json({ success: false, message: 'Invalid refresh token', action: 'logout' })
-                        const newAccessToken = jwt.sign({ username: user.username, avatar: user.avatar, email: user.email }, process.env.ACCESS_TOKEN, { expiresIn: '10s' });
+                        const newAccessToken = jwt.sign({ username: user.username, avatar: user.avatar, email: user.email }, process.env.ACCESS_TOKEN, { expiresIn: accesExpire });
                         req.user = user
                         req.newAccessToken = newAccessToken
                     })
@@ -80,17 +82,17 @@ router.post('/login', async (req, res) => {
             return res.json({ success: false, message: 'Authentification failed!' })
         }
 
-        const accessToken = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.ACCESS_TOKEN, { expiresIn: '10s' });
+        const accessToken = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.ACCESS_TOKEN, { expiresIn: accesExpire });
 
         const refreshToken = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.REFRESH_TOKEN)
 
         const cookieOptions = {
-            domain:'.vercel.app',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
+            domain:'vercel.app',
+            maxAge: 7 * 24 * 60 * 60,
             secure: true,
             sameSite: 'none',
             path:'/',
-            httpOnly: false
+            httpOnly: true
         };
         const refreshTokenCookie = cookie.serialize('refreshToken', refreshToken, cookieOptions);
 
