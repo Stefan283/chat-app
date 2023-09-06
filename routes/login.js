@@ -88,7 +88,7 @@ router.post('/login', async (req, res) => {
 
         const cookieOptions = {
             domain:'chat-drab-nine.vercel.app',
-            secure: false,
+            secure: true,
             maxAge: 7 * 24 * 60 * 60,
             path:'/',
             httpOnly: false
