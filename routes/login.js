@@ -2,37 +2,27 @@ var express = require('express');
 var router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const cookie = require('cookie');
 const { Users, Messages } = require('./Schema');
 
 const verifyToken = (req, res, next) => {
+    const header = req.headers['authorization'];
+    const accessToken = header ? header.split(' ')[1] : null
     try {
-        const accessToken = req.cookies.accessToken
         if (!accessToken) {
             return res.json({ success: false, message: 'Authentication required' });
         }
-
         jwt.verify(accessToken, process.env.ACCESS_TOKEN, async (err, decoded) => {
             if (err) {
                 if (err.name === 'TokenExpiredError') {
-                    const refreshTokenCookie = req.cookies.refreshToken
-                    const username = jwt.decode(accessToken).username
-                    const user = await Users.findOne({ username })
-                    const refreshTokenDb = user?.refreshToken
-                    if (!refreshTokenDb || !refreshTokenCookie) return res.json({ success: false, message: 'Refresh token missing', action: 'logout' })
-                    if (refreshTokenCookie !== refreshTokenDb) {
-                        return res.json({ success: false, message: 'Refresh token was changed', action: 'logout' })
-                    }
-                    jwt.verify(refreshTokenDb, process.env.REFRESH_TOKEN, (err, user) => {
+                    const refreshToken = req.cookies.refreshToken
+                    console.log(refreshToken)
+                    if (!refreshToken) return res.json({ success: false, message: 'Refresh token missing', action: 'logout' })
+                    jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, user) => {
                         if (err) return res.json({ success: false, message: 'Invalid refresh token', action: 'logout' })
-                        const newJwt = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.ACCESS_TOKEN, { expiresIn: '30s' });
-                        res.cookie('accessToken', newJwt, {
-                            maxAge: 7 * 24 * 60 * 60 * 1000,
-                            httpOnly: false,
-                            domain: ".vercel.app",
-                            path: '/',
-                            secure: true,
-                        })
+                        const newAccessToken = jwt.sign({ username: user.username, avatar: user.avatar, email: user.email }, process.env.ACCESS_TOKEN, { expiresIn: '10s' });
                         req.user = user
+                        req.newAccessToken = newAccessToken
                     })
                 } else {
                     return res.json({ success: false, message: 'Invalid access token', action: 'logout' });
@@ -90,64 +80,31 @@ router.post('/login', async (req, res) => {
             return res.json({ success: false, message: 'Authentification failed!' })
         }
 
-        const token = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.ACCESS_TOKEN, { expiresIn: '30s' });
+        const accessToken = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.ACCESS_TOKEN, { expiresIn: '10s' });
 
         const refreshToken = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.REFRESH_TOKEN)
 
-        user.refreshToken = refreshToken
-        await user.save()
-
-        res.cookie('accessToken', token, {
+        const cookieOptions = {
+            domain:'vercel.app',
             maxAge: 7 * 24 * 60 * 60 * 1000,
-            httpOnly: false,
-            domain: ".vercel.app",
-            path: '/',
             secure: true,
-        })
+            sameSite: 'none'
+        };
+        const refreshTokenCookie = cookie.serialize('refreshToken', refreshToken, cookieOptions);
+
+        res.setHeader('Set-Cookie', refreshTokenCookie);
 
 
-        res.cookie('refreshToken', refreshToken, {
-            maxAge: 30 * 24 * 60 * 60 * 1000,
-            httpOnly: false,
-            domain: ".vercel.app",
-            path: '/',
-            secure: true,
-        })
-
-        res.json({ success: true, user: user });
+        res.json({ success: true, accessToken: accessToken, user: user });
     } catch (error) {
         console.log(error)
         res.json({ success: false, message: error.message })
     }
 });
 
-router.post('/logout', async (req, res) => {
-    try {
-        res.cookie('accessToken', null, {
-            maxAge: 30 * 24 * 60 * 60 * 1000,
-            httpOnly: false,
-            domain: ".vercel.app",
-            path: '/',
-            secure: true,
-        })
-
-        res.cookie('refreshToken', null, {
-            maxAge: 30 * 24 * 60 * 60 * 1000,
-            httpOnly: false,
-            domain: ".vercel.app",
-            path: '/',
-            secure: true,
-        })
-
-        res.json({ success: true })
-    } catch (err) {
-        console.log(err)
-        res.json({ success: false, message: 'Unable to logout' })
-    }
-})
-
 router.post('/getuser', verifyToken, async (req, res) => {
-    res.json({ success: true, user: req.user })
+    (req.newAccessToken)
+    res.json({ success: true, user: req.user, newAccessToken: req.newAccessToken })
 })
 
 module.exports = router;
