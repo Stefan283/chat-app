@@ -11,7 +11,7 @@ const verifyToken = (req, res, next) => {
     const header = req.headers['authorization'];
     const accessToken = header ? header.split(' ')[1] : null
     try {
-        console.log(req.cookies)
+        console.log(req.cookies.refreshToken)
         if (!accessToken) {
             return res.json({ success: false, message: 'Authentication required' });
         }
