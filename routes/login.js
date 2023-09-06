@@ -85,7 +85,7 @@ router.post('/login', async (req, res) => {
         const refreshToken = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.REFRESH_TOKEN)
 
         const cookieOptions = {
-            domain:'vercel.app',
+            domain:'.vercel.app',
             maxAge: 7 * 24 * 60 * 60 * 1000,
             secure: true,
             sameSite: 'none',
