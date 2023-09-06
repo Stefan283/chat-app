@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const cookie = require('cookie');
 const { Users, Messages } = require('./Schema');
 
-const accesExpire = '10m'
+const accesExpire = '10s'
 
 const verifyToken = (req, res, next) => {
     const header = req.headers['authorization'];
