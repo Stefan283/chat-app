@@ -2,33 +2,19 @@ var express = require('express');
 var router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const cookie = require('cookie');
 const { Users, Messages } = require('./Schema');
-
-const accesExpire = '10m'
+const accessExpire = '10s'
 
 const verifyToken = (req, res, next) => {
     const header = req.headers['authorization'];
     const accessToken = header ? header.split(' ')[1] : null
     try {
-        console.log(req.cookies.refreshToken)
         if (!accessToken) {
             return res.json({ success: false, message: 'Authentication required' });
         }
         jwt.verify(accessToken, process.env.ACCESS_TOKEN, async (err, decoded) => {
             if (err) {
-                if (err.name === 'TokenExpiredError') {
-                    const refreshToken = req.cookies.refreshToken
-                    if (!refreshToken) return res.json({ success: false, message: 'Refresh token missing', action: 'logout' })
-                    jwt.verify(refreshToken, process.env.REFRESH_TOKEN, (err, user) => {
-                        if (err) return res.json({ success: false, message: 'Invalid refresh token', action: 'logout' })
-                        const newAccessToken = jwt.sign({ username: user.username, avatar: user.avatar, email: user.email }, process.env.ACCESS_TOKEN, { expiresIn: accesExpire });
-                        req.user = user
-                        req.newAccessToken = newAccessToken
-                    })
-                } else {
-                    return res.json({ success: false, message: 'Invalid access token', action: 'logout' });
-                }
+                return res.json({ success: false, message: 'Invalid token', action: 'logout' });
             } else {
                 req.user = decoded;
             }
@@ -82,27 +68,16 @@ router.post('/login', async (req, res) => {
             return res.json({ success: false, message: 'Authentification failed!' })
         }
 
-        const accessToken = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.ACCESS_TOKEN, { expiresIn: accesExpire });
+        const accessToken = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.ACCESS_TOKEN, { expiresIn: accessExpire });
 
         const refreshToken = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.REFRESH_TOKEN)
 
-        res.setHeader('Set-Cookie', cookie.serialize('refreshToken', refreshToken, {
-            path:'/',
-            domain: 'chat-drab-nine.vercel.app',
-            maxAge:10000000
-        }));
 
-
-        res.json({ success: true, accessToken: accessToken, user: user });
+        res.json({ success: true, accessToken: accessToken, refreshToken: refreshToken, user: user });
     } catch (error) {
         console.log(error)
         res.json({ success: false, message: error.message })
     }
 });
-
-router.post('/getuser', verifyToken, async (req, res) => {
-    (req.newAccessToken)
-    res.json({ success: true, user: req.user, newAccessToken: req.newAccessToken })
-})
 
 module.exports = router;
