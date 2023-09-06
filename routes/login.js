@@ -88,7 +88,9 @@ router.post('/login', async (req, res) => {
             domain:'vercel.app',
             maxAge: 7 * 24 * 60 * 60 * 1000,
             secure: true,
-            sameSite: 'none'
+            sameSite: 'none',
+            path:'/',
+            httpOnly: false
         };
         const refreshTokenCookie = cookie.serialize('refreshToken', refreshToken, cookieOptions);
 
