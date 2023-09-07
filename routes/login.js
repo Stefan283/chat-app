@@ -5,29 +5,6 @@ const jwt = require('jsonwebtoken');
 const { Users, Messages } = require('./Schema');
 const accessExpire = '10s'
 
-const verifyToken = (req, res, next) => {
-    const header = req.headers['authorization'];
-    const accessToken = header ? header.split(' ')[1] : null
-    try {
-        if (!accessToken) {
-            return res.json({ success: false, message: 'Authentication required' });
-        }
-        jwt.verify(accessToken, process.env.ACCESS_TOKEN, async (err, decoded) => {
-            if (err) {
-                return res.json({ success: false, message: 'Invalid token', action: 'logout' });
-            } else {
-                req.user = decoded;
-            }
-            next();
-        });
-    } catch (err) {
-        console.log(err)
-        return res.json({ succes: false, message: err.message })
-    }
-};
-
-
-
 router.post('/register', async (req, res) => {
     const { username, password, email, avatar } = req.body;
     try {
@@ -68,10 +45,10 @@ router.post('/login', async (req, res) => {
             return res.json({ success: false, message: 'Authentification failed!' })
         }
 
+
         const accessToken = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.ACCESS_TOKEN, { expiresIn: accessExpire });
 
         const refreshToken = jwt.sign({ username, avatar: user.avatar, email: user.email }, process.env.REFRESH_TOKEN)
-
 
         res.json({ success: true, accessToken: accessToken, refreshToken: refreshToken, user: user });
     } catch (error) {
