@@ -44,12 +44,35 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+function verifyAccessToken(req, res, next) {
+  try {
+    const header = req.headers['authorization'];
+    const token = header ? header.split(' ')[1] : null
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Access token is missing' });
+    }
+
+    jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ message: 'Invalid token' });
+      }
+      req.user = decoded;
+      next();
+    });
+  } catch (err) {
+    console.log(err)
+    return res.status(401).json({ success: false, message: err.message })
+  }
+}
+
+
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/users', verifyAccessToken, usersRouter);
 app.use('/login', loginRouter)
 app.use(
   '/graphql',
+  verifyAccessToken,
   graphqlHTTP({
     schema,
     graphiql: true,

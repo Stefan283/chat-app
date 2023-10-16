@@ -2,40 +2,9 @@ var app = require('../app');
 var debug = require('debug')('server:server');
 var http = require('http');
 const socketIO = require('socket.io');
-const logger = require('morgan');
 const mongoose = require('mongoose')
 require('dotenv').config();
 const { Messages } = require('../routes/Schema.js');
-const { S3 } = require('aws-sdk');
-
-
-const s3 = new S3({
-  region: 'eu-west-3',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-});
-
-const uploadPhoto = async (photoData) => {
-  try {
-    const buffer = Buffer.from(photoData, 'base64');
-    const fileName = `uploads/${Date.now()}${Math.random()}`;
-    const params = {
-      Bucket: 'chatapp2834',
-      Key: fileName,
-      Body: buffer,
-    };
-
-    const uploaded = await s3.upload(params).promise();
-    const photoUrl = uploaded.Location;
-    console.log('Photo uploaded succesfuly')
-    return { success: true, photo: photoUrl };
-  } catch (error) {
-    console.error('Error uploading to S3:', error);
-    return { success: false, message: error.message }
-  }
-};
 
 
 var port = normalizePort(process.env.PORT || '3000');
@@ -54,6 +23,9 @@ io.on('connection', (socket) => {
     socket.join(room.room);
     console.log(`User joined room: ${room.room}`);
   });
+  socket.on('error', (error) => {
+    console.error('WebSocket error:', error);
+  });
 
   socket.on('leave', (room) => {
     socket.room = room.room
@@ -63,21 +35,12 @@ io.on('connection', (socket) => {
 
   socket.on('message', async (data) => {
     try {
-      if (data?.photo) {
-        console.log(data.photo)
-        const photoData = await uploadPhoto(data?.photo)
-        if (photoData.success) {
-          var photo = photoData.photo
-        } else {
-          return new Error({ message: `Cannot upload the photo: ${photoData.message}` })
-        }
-      }
       let message = {
         email: data.emailSend,
         date: data.date,
         message: data.message,
       }
-      message = photo ? { ...message, photo: photo } : message
+      message = data.photo ? { ...message, photo: data.photo } : message
       const userSend = await Messages.exists({
         email: data.emailSend,
         'conversations.email': data.emailReceive,
