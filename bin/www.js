@@ -2,7 +2,6 @@ var app = require('../app');
 var debug = require('debug')('server:server');
 var http = require('http');
 const socketIO = require('socket.io');
-const logger = require('morgan');
 const mongoose = require('mongoose')
 require('dotenv').config();
 const { Messages } = require('../routes/Schema.js');
@@ -24,6 +23,9 @@ io.on('connection', (socket) => {
     socket.join(room.room);
     console.log(`User joined room: ${room.room}`);
   });
+  socket.on('error', (error) => {
+    console.error('WebSocket error:', error);
+  });
 
   socket.on('leave', (room) => {
     socket.room = room.room
@@ -33,11 +35,12 @@ io.on('connection', (socket) => {
 
   socket.on('message', async (data) => {
     try {
-      const message = {
+      let message = {
         email: data.emailSend,
         date: data.date,
-        message: data.message
+        message: data.message,
       }
+      message = data.photo ? { ...message, photo: data.photo } : message
       const userSend = await Messages.exists({
         email: data.emailSend,
         'conversations.email': data.emailReceive,
@@ -93,8 +96,7 @@ io.on('connection', (socket) => {
         );
       }
       console.log(`Message sent in room: ${data.room}`);
-
-      io.to(data.room).emit('message', { success: true, message: message });
+      io.to(data.room).emit('message', { success: true, message: message, photo: message?.photo });
       const sideReceive = {
         username: data?.userSend || '',
         lastMsg: data?.message || '',
@@ -165,12 +167,11 @@ const connect = async () => {
 var port = normalizePort(process.env.PORT || '9000');
 app.set('port', port);
 
-server.listen(port, 
-  // '192.168.100.34', 
+server.listen(port,
   async () => {
-  await connect()
-  console.log(`Server is on port: ${port}`)
-});
+    await connect()
+    console.log(`Server is on port: ${port}`)
+  });
 server.on('error', onError);
 server.on('listening', onListening);
 

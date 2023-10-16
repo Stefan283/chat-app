@@ -5,7 +5,7 @@ const { Users, Messages } = require("./Schema")
 router.route('/')
   .get(function (req, res, next) {
     try {
-      res.json({ success: true })
+      res.json({ success: true, data: 'si lucra pe camion' })
     } catch (err) {
       res.json({ success: false, message: err });
     }

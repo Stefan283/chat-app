@@ -1,9 +1,11 @@
 const mongoose = require('mongoose')
 
 const usersSchema = new mongoose.Schema({
+  username: String,
+  password: String,
   email: String,
-  name: String,
   avatar: String,
+  refreshToken: String,
   posts: [{
     src: String,
     image: String,
@@ -35,6 +37,7 @@ const messagesSchema = new mongoose.Schema({
       email: String,
       date: Number,
       message: String,
+      photo: String
     }]
   }]
 })
