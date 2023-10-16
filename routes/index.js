@@ -48,42 +48,5 @@ router.post('/upload-photo', upload.single('photo'), async (req, res) => {
   }
 });
 
-router.post('/upload-function', async (req, res) => {
-  const { photo } = req.body
-  try {
-    console.log(photo)
-    const url = await uploadPhoto(photo)
-    if(url.success) {
-      res.json({success:true, url: url.photo})
-    } else {
-      res.json({success:false, message: url.message})
-    }
-  } catch (err) {
-    res.json({success:false})
-  }
-})
-
-
-const uploadPhoto = async (photoData) => {
-  try {
-    const buffer = Buffer.from(photoData, 'base64');
-    const fileName = `uploads/${Date.now()}${Math.random()}`;
-    const params = {
-      Bucket: 'chatapp2834',
-      Key: fileName,
-      Body: buffer,
-    };
-
-    const uploaded = await s3.upload(params).promise();
-    const photoUrl = uploaded.Location;
-    console.log('Photo uploaded succesfuly')
-    return { success: true, photo: photoUrl };
-  } catch (error) {
-    console.error('Error uploading to S3:', error);
-    return { success: false, message: error.message }
-  }
-};
-
-
 
 module.exports = router;
